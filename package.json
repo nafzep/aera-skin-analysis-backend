@@ -1,0 +1,12 @@
+{
+  "name": "aera-skin-analysis-backend",
+  "version": "1.0.0",
+  "private": true,
+  "scripts": {
+    "start": "vercel dev"
+  },
+  "dependencies": {
+    "node-fetch": "^3.4.0"
+  },
+  "type": "module"
+}
