@@ -6,7 +6,9 @@
     "start": "vercel dev"
   },
   "dependencies": {
-    "node-fetch": "^3.3.2"
-  },
+  "express": "^4.18.2",
+  "cors": "^2.8.5",
+  "formidable": "^3.5.0"
+},
   "type": "module"
 }
