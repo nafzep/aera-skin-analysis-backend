@@ -36,7 +36,7 @@ export default async function handler(req, res) {
     const imageBase64 = imageBuffer.toString("base64");
 
     const response = await fetch(
-      process.env.PERFECTCORP_BASE + "/v1/ai/skin-analysis/task",
+      process.env.PERFECTCORP_BASE + "/s2s/v1/ai/skin-analysis/task",
       {
         method: "POST",
         headers: {
