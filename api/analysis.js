@@ -47,8 +47,11 @@ export default async function handler(req, res) {
       }
     );
 
-    const result = await response.json();
-    return res.status(200).json(result);
+ const text = await response.text();
+return res.status(response.status).json({
+  status: response.status,
+  body: text
+});
 
   } catch (error) {
     return res.status(500).json({ error: error.toString() });
