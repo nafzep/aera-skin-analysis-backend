@@ -8,7 +8,7 @@ export const config = {
 };
 
 export default async function handler(req, res) {
-  // ✅ FIX CORS HERE
+  // ✅ CORS FIX
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Methods", "POST, OPTIONS");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
@@ -22,35 +22,33 @@ export default async function handler(req, res) {
   }
 
   try {
-    const form = new formidable.IncomingForm();
+    // ✅ NEW CORRECT FORMIDABLE SYNTAX (v3)
+    const form = formidable();
 
-    form.parse(req, async (err, fields, files) => {
-      if (err) {
-        return res.status(500).json({ error: "Image upload failed" });
+    const [fields, files] = await form.parse(req);
+
+    if (!files.image) {
+      return res.status(400).json({ error: "No image provided" });
+    }
+
+    const imageFile = files.image[0]; // ✅ v3 uses array
+    const imageBuffer = fs.readFileSync(imageFile.filepath);
+    const imageBase64 = imageBuffer.toString("base64");
+
+    const response = await fetch(
+      process.env.PERFECTCORP_BASE + "/v1/ai/skin-analysis/task",
+      {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Api-Key ${process.env.PERFECTCORP_API_KEY}`,
+        },
+        body: JSON.stringify({ imageBase64 }),
       }
+    );
 
-      if (!files.image) {
-        return res.status(400).json({ error: "No image provided" });
-      }
-
-      const imageBuffer = fs.readFileSync(files.image.filepath);
-      const imageBase64 = imageBuffer.toString("base64");
-
-      const response = await fetch(
-        process.env.PERFECTCORP_BASE + "/v1/ai/skin-analysis/task",
-        {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-            "Authorization": `Api-Key ${process.env.PERFECTCORP_API_KEY}`
-          },
-          body: JSON.stringify({ imageBase64 }),
-        }
-      );
-
-      const result = await response.json();
-      return res.status(200).json(result);
-    });
+    const result = await response.json();
+    return res.status(200).json(result);
 
   } catch (error) {
     return res.status(500).json({ error: error.toString() });
